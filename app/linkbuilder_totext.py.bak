@@ -1,0 +1,443 @@
+# -*- coding: utf-8 -*-
+#import pypandoc
+#import pdfminer
+#import PyPDF2
+
+
+from io import BytesIO
+# from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+# from pdfminer.converter import TextConverter
+# from pdfminer.layout import LAParams
+# from pdfminer.pdfpage import PDFPage
+import os
+import sys, getopt
+
+
+import subprocess
+import textract
+import re
+
+
+intext_maps = {"mapping": []}
+
+class Reference:
+    def __init__(self, author, year, pages, start, end):
+        self.author = author
+        self.year = year
+        self.pages = pages
+        self.start = start
+        self.end = end
+
+    def dikt(self):
+        entry = {}
+        entry['author'] = self.author
+        entry['year'] = self.year
+        entry['pages'] = self.pages
+        entry['start'] = self.start
+        entry['end'] = self.end
+        return entry
+
+
+class Match:
+    pass
+
+
+class Listing:
+    def __init__(self, author, year, therest):
+        self.author = author
+        self.year = year
+        self.therest = therest
+
+
+    def dikt(self):
+        item = {}
+        item['author'] = self.author
+        item['year'] = self.year
+        restless = therest.split('.\s')
+
+
+class Mapping:
+    def __init__(self, style):
+        self.style = style
+
+    def add_subgroup(subgroup, example, regex):
+        style['supgroup'] = subgroup
+        style['example'] = example
+        style['regex'] = regex
+
+    def rtrn_dikt():
+        pass
+
+
+def add_sg(subgroup, example, regex):
+    output = {}
+    output["subgroup"] = subgroup
+    output["example"] = example
+    output["regex"] = regex
+    return output
+
+
+
+def add_mapping(style, subgroup, example, regex, targetdict=intext_maps):
+
+    style = []
+    subgroup = add_style(subgroup, example, regex)
+    style.append(subgroup)
+    targetdict['mapping'].append(style)
+
+
+
+
+def dsmbg(input_text):
+    m = re.match("in:", input_text, re.I)
+    m2 = re.search(r"[\d]+(\([\d–]+\)|:)", input_text)
+
+    if m:
+        return 'editor'
+    elif m2:
+        return 'journal'
+    else:
+        return 'publication'
+
+
+def dsmbg_link(input_text, alternative):
+    m3 = re.search(r"http|doi", input_text)
+    if m3:
+        return 'url'
+    else:
+        return alternative
+
+
+def extract_ref_list(input_text):
+
+    ##MATCH REFERENCE LIST && PARSE
+
+    refrnc_list = {'entries': []}
+
+    #print pref_match[0]
+
+    # pref_match2 = pref_match[0].replace('\n', ' ')
+
+    # #print pref_match2
+
+    # meh = r"(\s[A-Za-z\s\,]+)[\s\(]([1|2]\d{3})[\s\)\.]"
+
+    # res = re.finditer(meh, pref_match2, re.DOTALL | re.UNICODE)
+
+    # for i in res:
+    #     print i.groups()
+
+    #promising = r"(([\w\s]+)\(([1|2]\d{3})\))?(.*)"
+    #viktor = r"(?sm)^([\w\s\.,]+)\(([12]\d{3})\)(.*?)(?=^[\w\s\.,]+\([12]\d{3}\)|\s\n|\Z)"
+    viktor_u = r"(?sm)^([^()\n\r]+)\(([12]\d{3})\)(.*?)(?=^[^()\n\r]+\([12]\d{3}\)|\s\n|\Z)"
+
+    prom_match = re.finditer(viktor_u, input_text, re.UNICODE)
+
+    for m in prom_match:
+        #print m.groups()
+        author = m.groups()[0]
+        year = m.groups()[1]
+        therest = m.groups()[2]
+        therest = therest.replace('\n', '')
+        restless = re.split(r"\.\s(?<!et al)|[!?]", therest, re.UNICODE)
+
+        item = {}
+
+        item['author'] = author
+        item['year'] = year
+
+        if len(restless) == 2:
+            #print restless
+            item['title'] = restless[0]
+            m = re.search(r"[\d]+(\([\d–]+\)|:)", restless[1])
+            if m:
+                item['journal'] = restless[1]
+            else:
+                item['publisher'] = restless[1]
+        if len(restless) == 3:
+            #print restless
+            item['title'] = restless[0]
+
+            touch = dsmbg(restless[1])
+
+            if touch == 'editor':
+                splt = re.split(r"\(ed.*?\)", restless[1], re.UNICODE)
+                #splt0 = re.sub(r"in:", splt[0], re.UNICODE | re.I)
+
+                item[touch] = splt[0].replace('In:', '').strip()
+                item['book_title'] = splt[1]
+
+            item[dsmbg_link(restless[2], 'unknown')] = restless[2].replace("Available at:", "").strip()
+            #print item
+
+        if len(restless) == 4:
+            #print restless[3]
+            item['title'] = restless[0]
+
+            #here's a mistake
+
+            touch = dsmbg(restless[1])
+
+            if touch == 'editor':
+                splt = re.split(r"\(ed.*?\)", restless[1], re.UNICODE)
+                try:
+                    item['book_title'] = splt[1]
+                except IndexError:
+                    pass
+
+                item[touch] = splt[0].replace('In:', '').strip()
+
+
+            item[dsmbg_link(restless[2], 'publisher')] = restless[2]
+            item[dsmbg_link(restless[3], 'unknown')] = restless[3]
+            #print item
+
+
+        if len(restless) == 5:
+            #print restless
+            item['title'] = restless[0]
+            item['editor'] = restless[1]
+            item['book_title'] = restless[2].replace('(eds)', '')
+            item['publisher'] = restless[3]
+            item['pages'] = restless[4]
+
+
+        elif len(restless) == 6:
+            pass
+
+        refrnc_list['entries'].append(item)
+
+
+    #print len(refrnc_list['entries'])
+
+    print refrnc_list
+
+
+
+def extract_refs(input_text, mapping):
+
+
+
+    #MATCH ALL (AUTHOR YEAR: PAGES)
+    #author_year_pages = r"\((.+?)([1|2]\d{3}):\s([\d].*?[\d]*)\)"
+    #author_year_pages = r"\((.*?)([1|2]\d{3})(.*?)([\d]*|[\d].*?[\d])\)"
+    author_year_pages = r"\(([\w+,\s\.]+)([1|2]\d{3}:\s[\d].*?[\d]*\))"
+
+    #MATCH ALL (AUTHOR YEAR)
+    #auth_year = r"^.*?\((.*?)\s([1|2]\d{3})\)"
+    #this one is a mystery ('2015) The Black Box Society, but also underpinning proposals by Diakopoulos (2016), Brill (2015), and Soltani (Zara,', '2015')
+    #auth_year = r"\(([\w+,\s]*)[1|2]\d{3}:\s[\d].*?[\d]*\)"
+
+    #this one matches (Author 2013) as well
+    auth_year = r"\(([A-Za-z\s\.]*)[,\s]+([1|2]\d{3})\)"
+
+    #MATCH ALL AUTHOR (YEAR: PAGES)
+    #outhor = r"([A-Z][a-z]+)\s(\([1|2]\d{3})(:\s([\d].*[\d]*)\))"
+    outhor = r"([\w]+)\s\((([1|2]\d{3,}):\s([\d].*?[\d]*)\))"
+
+    #MATCH ALL AUTHOR (YEAR)
+    #outhor2 = r"([A-Z][a-z]*)\s(\([1|2]\d{3})\)"
+    outhor2 = r"([A-Z][a-z\s\.]*)\s(\([1|2]\d{3})\)"
+
+
+    #MATCH ALL (author, year; author, year; author, year)
+    #multiple = r"(\((([\w+\s\.]*)[,\s]+([1|2]\d{3};))+\))"
+    #this one matches (Author 2013) (multiple) as well
+    #multiple = r"((([a-zA-Z\s\.]*)[,\s]+([1|2]\d{3}))*;([a-zA-Z\s\.]*),\s([1|2]\d{3}))"
+    multiple = r"(([A-Za-z\s\.]*[,\s]+[1|2][\d]{3};\s)+([\w]+[,\s]+([1|2][\d]{3}\))))"
+
+    #MATCH ALL (pp. 133–134) & (p.59) ibid?
+    #pp = r"([^\(]*)(\(p+\..*?\))|(\(ibid\))"
+    #pp = r"([A-Z][a-z\s\.]*)\s(\([1|2]\d{3}\))(?:.*?)(\(p+\..*?\))|(\(ibid.*?\))"
+    pp = r"("+author_year_pages+r"|"+outhor2+r")(?:.*?)(\(p+\..*?\))|(\(ibid.*?\))"
+
+
+
+    #MATCHES
+    match_a_y_p = re.finditer(author_year_pages, input_text, re.MULTILINE | re.UNICODE)
+    match_a_y_p_len = re.findall(author_year_pages, input_text, re.MULTILINE | re.UNICODE)
+
+    match_a_y = re.finditer(auth_year, input_text, re.MULTILINE | re.UNICODE)
+    match_a_y_len = re.findall(auth_year, input_text, re.MULTILINE | re.UNICODE)
+
+    match_outhor = re.finditer(outhor, input_text, re.MULTILINE | re.UNICODE)
+    match_outhor_len = re.findall(outhor, input_text, re.MULTILINE | re.UNICODE)
+
+    match_outhor2 = re.finditer(outhor2, input_text, re.MULTILINE | re.UNICODE | re.UNICODE)
+    match_outhor2_len = re.findall(outhor2, input_text, re.MULTILINE | re.UNICODE)
+
+    match_multiple = re.finditer(multiple, input_text, re.MULTILINE | re.UNICODE)
+    match_multiple_len = re.findall(multiple, input_text, re.MULTILINE | re.UNICODE)
+
+    match_pp = re.finditer(pp, input_text, re.MULTILINE | re.UNICODE)
+    match_pp_len = re.findall(pp, input_text, re.MULTILINE | re.UNICODE)
+
+
+    master_dict = {"references":[]}
+
+
+    print "\n\ngroup1: (author year: pages) \n\n"
+    print len(match_a_y_p_len)
+
+    for match in match_a_y_p:
+        print match.groups()
+        # print match.groups()[2]
+        # print match.groups()[3]
+        # print match.start()
+        # print match.end()
+
+        # author = match.groups()[1].replace(',','').replace('(', '').strip()
+        # year = match.groups()[2].strip()
+        # pages = match.groups()[3].replace(':', '').replace(')','').strip()
+        # start = match.start()
+        # end = match.end()
+
+
+        # entry = Reference(author, year, pages, start, end)
+        # toadd = entry.dikt()
+
+        # master_dict['references'].append(toadd)
+
+
+    print "\n\ngroup2: (author year)\n\n"
+    print len(match_a_y_len)
+
+    for match in match_a_y:
+        print match.groups()
+
+
+    print "\n\ngroup3: author (year: page)"
+    print len(match_outhor_len)
+
+    for match in match_outhor:
+        print match.groups()
+
+    print "\n\ngroup4: author (year)"
+    print len(match_outhor2_len)
+
+    for match in match_outhor2:
+        print match.groups()
+
+    print "\n\ngroup5: multiple\n\n"
+    print len(match_multiple_len)
+
+    for match in match_multiple:
+        print match.groups()
+
+
+    print "\n\ngroup6: (p. 123)"
+    print len(match_pp_len)
+
+    for match in match_pp:
+        print match.groups()
+        print match.start()
+
+
+    '''
+    for matchNum, match in enumerate(matches):
+        matchNum = matchNum + 1
+
+        print "Match {matchNum} was found at {start}-{end}: {match}".format(matchNum = matchNum, start = match.start(), end = match.end(), match = match.group())
+
+    for groupNum in range(0, len(match.groups())):
+        groupNum = groupNum + 1
+
+        print "Group {groupNum} found at {start}-{end}: {group}".format(groupNum = groupNum, start = match.start(groupNum), end = match.end(groupNum), group = match.group(groupNum))
+    '''
+
+    #this is genious, it finds positions in string
+
+    #for i in loose_pat.finditer(input_text):
+    #    print i.start(), i.end(), i.group()
+
+
+
+
+
+def textract_convert(input_file):
+    output = textract.process(input_file)
+    return output
+
+
+def delegate(input_file):
+    if input_file.endswith('.pdf'):
+        output = textract_convert(input_file)
+        #do this
+    elif input_file.endswith('.doc'):
+        output = textract_convert(input_file)
+    elif input_file.endswith('.docx'):
+        output = textract_convert(input_file)
+    elif input_file.endswith('.odt'):
+        output = textract_convert(input_file)
+    elif input_file.endswith('.txt'):
+        output = input_file
+    elif input_file.endswith('.md'):
+        output = input_file
+    else:
+        return "invalid format"
+
+
+    # FIXES LINEBREAKS IN PARAGRAPHS
+    # output = output.replace('\n', ' ')
+    output = re.sub(r'([^\.])\n([^A-Z])', r'\1 \2', output)
+    print output
+
+    #MAPPINGS
+    #MAPPING 1: CHICAGO NO COMMA
+    # chicago = Mapping("Chicago")
+    # chicago.add_subgroup("author_year_pages", "Smith: 2009: 17", "\(([\w+,\s\.]+)([1|2]\d{3}:\s[\d].*?[\d]*\))")
+    #
+    # #add_mapping("Chicago", "author_year_pages", "Smith: 2009: 17", "\(([\w+,\s\.]+)([1|2]\d{3}:\s[\d].*?[\d]*\))")
+    # #add_mapping("Chicago", "author_year", "Smith: 2009", "\(([A-Za-z\s\.]*)[,\s]+([1|2]\d{3})\)")
+    #
+    #
+    # print chicago
+
+    extract_refs(output, "chicago")
+
+
+
+    #WHAT'S THE ALTERNATIVE? ABC? full matches for types?
+    # pref = r"(.*)\nReferences\n"
+    # afref = r"\nReferences\n(.*)"
+    # pref = r"(.*)\nLiterature Cited\n"
+    # afref = r"\nLiterature Cited\n(.*)"
+    # pref_match = re.findall(pref, output, re.DOTALL | re.UNICODE)
+    # afref_match = re.findall(afref, output, re.DOTALL | re.UNICODE)
+
+    # print pref_match[0]
+    # print "\nSTOP\n"
+    # print afref_match[0]
+
+    #print output
+    #extract_refs(output)
+    #extract_ref_list(afref_match[0])
+    #print pref_match
+
+    # magain = r"\((.*?)\)"
+
+
+    # magain_m = re.finditer(magain, pref_match[0], re.UNICODE | re.MULTILINE)
+
+    # for m in magain_m:
+    #     print m.groups()[0]
+
+
+
+#print textract_convert("uploads/conversion_testfiles/2016_10_28 - Review of Chantal Mouffe's Agonistics - v2.odt")
+#print textract_convert("uploads/conversion_testfiles/amadae_rochester_1999.pdf")
+#print textract_convert("uploads/conversion_testfiles/ananny_seeing_2016.pdf")
+# with open("uploads/conversion_testfiles/refs_annany.txt") as f:
+#     text = f.readlines()
+#     mlist = []
+#     for i in text:
+#         mlist.append(i)
+#
+#     #print len(mlist)
+#     #print mlist
+
+
+
+delegate("uploads/conversion_testfiles/ananny_seeing_2016_noref.pdf")
+
+print "success"

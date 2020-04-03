@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/tooltipster.bundle.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-noir.min.css">
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/js/tooltipster.bundle.min.js"></script>
+        <style media="screen">
+            .tooltip_templates {
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="meheh">
+            {% for t in data %}
+                {%- if t.old_cit -%}
+                    {{ t.part }} <span class="open">(</span>
+                    {%- for n in t.new_cit -%}
+                        {%- if n.links -%}
+                            {%- set ns = namespace(direct_href = '') -%}
+                            {%- set ns = namespace(open_href = '') -%}
+                            {%- set ns = namespace(selection = false ) -%}
+
+                            {%- for link in n.links -%}
+                                {% if link.selected %}
+                                    {% set ns.selection = true %}
+                                    {% if link.type == 'direct_url' %}
+                                        {% set ns.direct_href = link.href %}
+                                    {% elif link.type == 'open_url' %}
+                                        {% set ns.open_href = [link.href, '#dest=', n.in_pdf_page]|join('') %}
+                                    {% endif %}
+                                {% endif %}
+                            {%- endfor -%}
+
+                            {{- n.author }} {% if ns.selection %}<a href="#{{ n.bibkey }}" class="linkbelow">{{ n.year -}}</a>{% else %}{{ n.year -}}{% endif %}
+                            {%- if n.page -%}
+                                {%- if ns.selection -%}
+                                    {% if ns.direct_href|length > 1 and ns.open_href|length > 1 %} <a href="{{ ns.direct_href }}" class="linkout">, {{ n.page -}}</a> {% elif ns.direct_href|length > 1 and open_href|length < 1 %} <a href="{{ ns.direct_href }}" class="linkout">, {{- n.page -}}</a> {% elif ns.open_href|length > 1 and ns.direct_href|length < 1 %} <a href="{{ ns.open_href }}" class="linkout">, {{ n.page -}}</a> {% else %}, {{ n.page -}} {%- endif -%}
+                                {% else %}
+                                    , {{ n.page -}}
+                                {% endif %}
+                            {% endif %}{% if not loop.last %}; {%- endif -%}
+
+                        {% else %}
+                            {{- n.author }} {{ n.year }}{% if not loop.last %}; {% endif %}
+                        {%- endif -%}
+                    {%- endfor -%}
+                    <span class="close">)</span>
+                {%- else -%}
+                    {{ t.new_cit }}
+                {%- endif -%}
+
+            {% endfor %}
+
+        </div>
+        <div class="references">
+            <h2>References</h2>
+            {{ references }}
+
+        </div>
+
+        <footer>
+
+
+
+        </footer>
+
+    </body>
+</html>

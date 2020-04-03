@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+        <title>Linqr - commonify your links</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='master.css') }}">
+        <!--<script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script> -->
+        <!-- <link rel="stylesheet" href="static/master.css"> -->
+
+        <script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script>
+    {% endblock %}
+</head>
+<body class="{{ url_for(request.endpoint)|replace('/linqr/','') }}">
+
+
+<div class="container">
+    <div class="topbar">
+        <h1>Linqr - commonify your links</h1>
+        <p></p>
+    </div>
+    <div class="content row col-xl-8 col-lg-8 col-md-8">
+        {% block content %}{% endblock %}
+
+    </div>
+
+</div>
+
+<footer>
+{% block footer %}{% endblock %}
+</footer>
+
+</body>
+</html>

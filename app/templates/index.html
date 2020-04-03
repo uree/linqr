@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+    {% block head %}
+        {{ super() }}
+
+        {{ dropzone.load_js() }}
+
+    {% endblock %}
+
+    {% block content %}
+
+        <div class="upload-form">
+
+
+            {{ dropzone.config() }}
+            {{ dropzone.create(action=url_for('upload_file')) }}
+            <button type="submit" name="button" id="submit-uploads">Submit</button>
+
+            {% block process %}{% endblock %}
+
+            <!-- <form method="POST" enctype="multipart/form-data" action="/upload">
+                <input type="file" name="myfile">
+                <br>
+                <input type="submit" value="Upload">
+            </form> -->
+        </div>
+
+
+    {% endblock %}
+
+    {% block footer %}
+        <div class="" id="about">
+            <h3><a href="about">/about</a></h3>
+        </div>
+        <script type="text/javascript">
+            var spiralSrc = "{{ url_for('static', filename='img/spiral.gif') }}";
+            var redirectUrl = "{{ url_for('searching') }}";
+
+            $("#submit-uploads").click(function(){
+                $(".upload-form").replaceWith('Searching ... <img id="spiral" src="'+spiralSrc+'" alt="">');
+                $(".topbar > h1").css("opacity", "4%");
+
+                $.ajaxSetup({async: false});
+                $.ajax({
+                   type: "POST",
+                   success: function(response) {
+                            console.log("Success");
+                            window.location.href = redirectUrl;
+                        },
+                   error: function(error) {
+                            console.log(error);
+                    }
+                });
+
+            });
+
+        </script>
+
+    {% endblock %}

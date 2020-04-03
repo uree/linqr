@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+    {% block head %}
+        {{ super() }}
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    {% endblock %}
+
+    {% block content %}
+
+        <div class="choices">
+            <p class="report_hits">The technology has found new links for <span class="hl_num">{{ results.references_with_new_links }}</span> work(s) out of <span class="hl_num">{{ results.total_references }}</span> in your bibliography (hooray technology!).</p>
+
+            <div class="decision_time">
+                <h2>What would you like to do with the newfound links?</h2>
+                <ul class="choices">
+                    <li>Download them all neatly arranged inside a <button type="button" name="bib" id="bib">.bib</button>  or  <button type="button" name="bibjson" id="bibjson">.bibjson</button>  file.</li>
+                    <li><button type="button" name="bibliography" id="bibliography">Append</button> them all to my bibliography/reference list in
+                        <select class="" name="" id="bibliography_format" style="font-family: Courier,sans-serif">
+                            {% for f in formats %}
+                                <option value="{{ f }}">{{ f }}</option>
+                            {% endfor %}
+                        </select>
+                        <span>.</span>
+                    </li>
+                        <!-- choose a format? -->
+                    <li>
+                        <button type="button" name="button" value="" id="pages">Link to pages </button> by inserting the urls into a new version of the uploaded text as inline links. Append an appropriately refreshed bibliography.
+                        <!-- choose a format? -->
+                    </li>
+                    <li>
+                        <button type="button" name="button" value="" id="quotes-or-twoway-init">Link to exact quotes </button> by intergaring the urls into a new version of the uploaded text as deep inline links. Append an appropriately refreshed bibliography.
+                        <!-- choose a format? -->
+                        <div class="hidden-input">
+                            <p>If you would like to link back, enter the url where your text is to be published.</p>
+                            <input type="text" name="url" value="Enter url">
+                            <button type="submit" name="" value="" class="" id="quotes-or-twoway-submit">Submit</button>
+                        </div>
+                    </li>
+
+                    <li><button type="button" name="button"> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">I don't know</a></button> I need to think about it. What is thinking? Am I getting hungry? What was that song again?</li>
+                </ul>
+
+
+            </div>
+
+
+        </div>
+
+
+
+    {% endblock %}
+
+
+    {% block footer %}
+        <script type="text/javascript">
+            var results = {{ results|tojson }};
+            // $(document).ready(function(){
+            //     console.log("results below");
+            //     console.log(results);
+            // });
+
+            // loading animaton
+            var spiralSrc = "{{ url_for('static', filename='img/spiral.gif') }}";
+
+
+            //load appropriate urls
+            $("#bib").click(function(){
+                var bibtexUrl = "{{ url_for('resulting_choices', option='file', format='bibtex') }}";
+                $.ajaxSetup({async: false}); //set ajax async to false
+                $.ajax({
+                   type: "POST",
+                   contentType: "application/json",
+                   url: bibtexUrl,
+                   data: JSON.stringify(results),
+                   dataType: "json",
+                   success: function(response) {
+                            console.log(response['download_link']);
+                            window.location.href = response['download_link'];
+                        },
+                   error: function(error) {
+                            console.log(error);
+                    }
+                });
+            });
+
+            $("#bibjson").click(function(){
+                var bibjsonUrl = "{{ url_for('resulting_choices', option='file', format='bibjson') }}";
+                console.log(bibjsonUrl);
+                $.ajaxSetup({async: false}); //set ajax async to false
+                $.ajax({
+                   type: "POST",
+                   contentType: "application/json",
+                   url: bibjsonUrl,
+                   data: JSON.stringify(results),
+                   dataType: "json",
+                   success: function(response) {
+                            console.log(response['download_link']);
+                            window.location.href = response['download_link'];
+                        },
+                   error: function(error) {
+                            console.log(error);
+                    }
+                });
+            });
+
+            $("#bibliography").click(function(){
+                var format = $("#bibliography_format").val();
+
+                var bibliographyUrl = "{{ url_for('resulting_choices', option='bibliography', format=placeholder) }}" + format;
+
+                $.ajaxSetup({async: false}); //set ajax async to false
+                $.ajax({
+                   type: "POST",
+                   contentType: "application/json",
+                   url: bibliographyUrl,
+                   data: JSON.stringify(results),
+                   dataType: "json",
+                   success: function(response) {
+                            console.log(response['download_link']);
+                            window.location.href = response['download_link'];
+                        },
+                   error: function(error) {
+                            console.log(error);
+                    }
+               });
+            });
+
+            $("#pages").click(function(){
+                //console.log("processing pages");
+                $(".choices").replaceWith('Processing ... <img id="spiral" src="'+spiralSrc+'" alt="">');
+                var processingUrlPages = "{{ url_for('processing', option='pages') }}";
+
+                $.ajaxSetup({async: false}); //set ajax async to false
+                $.ajax({
+                   type: "POST",
+                   contentType: "application/json",
+                   url: processingUrlPages,
+                   data: JSON.stringify(results),
+                   dataType: "json",
+                   success: function(response) {
+                            console.log("Success");
+                            window.location.href = response['redirect_url'];
+                        },
+                   error: function(error) {
+                            console.log(error);
+                    }
+                });
+
+            });
+            $("#quotes-or-twoway-init").click(function(){
+                console.log("processing quotes");
+                // if stuff in url thing ... url = twoway
+                $(".hidden-input").css("display", "block");
+                var url = $("input[name=url]").val();
+                //console.log(url);
+                results['published_at'] = url;
+                console.log(results);
+
+            });
+
+            $("#quotes-or-twoway-submit").click(function(){
+                var linkback = $("input[name=url]").val();
+                if (linkback.startsWith('http')) {
+                    var option = 'twoway';
+                    srcurl = linkback
+                } else {
+                    var option = 'quotes';
+                    srcurl = ''
+                }
+
+                var processingUrlElse = "{{ url_for('processing', option=placeholder) }}" + option;
+                console.log(processingUrlElse);
+
+                results['linkback'] = srcurl;
+
+                $(".choices").replaceWith('Processing ... <img id="spiral" src="'+spiralSrc+'" alt="">');
+
+                $.ajaxSetup({async: false}); //set ajax async to false
+                $.ajax({
+                   type: "POST",
+                   contentType: "application/json",
+                   url: processingUrlElse,
+                   data: JSON.stringify(results),
+                   dataType: "json",
+                   success: function(response) {
+                            console.log("Success");
+                            window.location.href = response['redirect_url'];
+                        },
+                   error: function(error) {
+                            console.log(error);
+                    }
+                });
+
+            });
+
+            $("#quotes").click(function(){
+
+            });
+
+        </script>
+    {% endblock %}

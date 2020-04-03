@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+    {% block head %}
+        {{ super() }}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tooltipster-master/dist/css/tooltipster.bundle.min.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tooltipster-master/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-noir.min.css') }}" />
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='tooltipster-master/dist/js/tooltipster.bundle.min.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.2/axios.js"></script>
+        <script type="text/javascript">
+            var data = {{ matches|tojson }};
+            var text = {{ thetext|tojson }};
+            var results = {{ results|tojson }};
+            var combined = {{ combined|tojson }};
+            var style = {{ style|tojson }};
+        </script>
+        <!-- <script src="{{ url_for('static', filename='js/processing.js') }}" charset="utf-8"></script> -->
+    {% endblock %}
+
+    {% block content %}
+        <div class="magic">
+            <div class="instructions">
+                <div class="instructions_text">
+                    <h4>Instructions</h4>
+                    <p>Check the accuracy of links. Deselect or re-classify them. When done, click done.</p>
+                    <p>
+                        <ul>
+                            <li>direct_url - can be opened in browser and leads directly to the passage cited </li>
+                            <li>open_url - can be opened in browser and may lead to the page referenced</li>
+                            <li>download_url - will download on click</li>
+                            <li>landing_url - leads to a landing page with metadata and possible</li>
+                            <li>other_url - anything else</li>
+                        </ul>
+                    </p>
+                    <p>The quotes which will be used for deep linking are <span class="yellow">highlighted</span>.</p>
+                    <p><a href="about#known_issues">known issues</a></p>
+                </div>
+            </div>
+
+            <div class="textdisplay">
+                <h2>Your text</h2>
+                <div id="vueapp">
+                    <template v-if="style == 'apa'">
+                        <template v-for="t in d.preview_text" >
+                            <template v-if="t.old_cit">
+                                [[ t.part ]]
+                                <template v-if="t.new_cit.length > 1">
+                                    (
+                                    <template v-for="n in t.new_cit">
+                                        <template v-if="n.links">
+                                            [[ n.author ]], <a href="'#'+n.bibkey" class="tooltip" :data-tooltip-content="'#'+n.ttipid+'_download'">[[ n.year ]]</a><span v-if="n.page">: <a :data-tooltip-content="'#'+n.ttipid+'_open'" href="#" class="tooltip">[[ n.page ]]</a>;</span> <span v-else>;</span>
+
+                                            <span class="tooltiplinks open" :id="n.ttipid+'_open'">
+                                                <p v-for="link in n.links" v-if="link.type == 'open_url'"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /><a :href="link.href+'#dest='+n.in_pdf_page" target="_blank">[[ link.type.split('_')[0] ]] </a> <input type="text" name="" v-model="n.in_pdf_page" placeholder="in pdf page"/> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ link.type.split('_')[0] ]]</option></select></p>
+                                                <p v-for="link in n.links" v-if="link.type == 'direct_url'"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /><a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]] </a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                            </span>
+                                            <span class="tooltiplinks download" :id="n.ttipid+'_download'">
+                                                <template v-if="n.page">
+                                                    <p v-for="link in n.links" v-if="link.type != 'open_url' && link.type != 'direct_url'" > <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /> <a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                                </template>
+                                                <template v-else>
+                                                    <p v-for="link in n.links"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /> <a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                                </template>
+
+                                            </span>
+                                        </template>
+                                        <template v-else>
+                                            [[ n.author ]], [[ n.year ]];
+                                        </template>
+                                    </template>
+                                    )
+                                </template>
+                                <template v-else>
+                                    <template v-for="n in t.new_cit">
+                                        <template v-if="n.links">
+                                            ([[ n.author ]], <a href="'#'+n.bibkey" class="tooltip" :data-tooltip-content="'#'+n.ttipid+'_download'">[[ n.year ]]</a><span v-if="n.page">: <a :data-tooltip-content="'#'+n.ttipid+'_open'" href="#" class="tooltip">[[ n.page ]]</a>)</span> <span v-else>)</span>
+
+                                            <span class="tooltiplinks open" :id="n.ttipid+'_open'">
+                                                <p v-for="link in n.links" v-if="link.type == 'open_url'"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /><a :href="link.href+'#dest='+n.in_pdf_page" target="_blank">[[ link.type.split('_')[0] ]] </a> <input type="text" name="" v-model="n.in_pdf_page" placeholder="in pdf page"/> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ link.type.split('_')[0] ]]</option></select></p>
+                                                <p v-for="link in n.links" v-if="link.type == 'direct_url'"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /><a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]] </a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                            </span>
+                                            <span class="tooltiplinks download" :id="n.ttipid+'_download'">
+                                                <template v-if="n.page">
+                                                    <p v-for="link in n.links" v-if="link.type != 'open_url' && link.type != 'direct_url'" > <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /> <a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                                </template>
+                                                <template v-else>
+                                                    <p v-for="link in n.links"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /> <a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                                </template>
+                                            </span>
+                                        </template>
+                                        <template v-else>
+                                            ([[ n.author ]], [[ n.year ]])
+                                        </template>
+                                    </template>
+                                </template>
+                            </template>
+                            <template v-else>
+                                [[ t.new_cit ]]
+                            </template>
+                        </template>
+                        <!-- end v-for="t in d.preview_text" -->
+
+                    </template>
+                    <!-- end v-if="style == 'apa'" -->
+                    <template v-else>
+                        <template v-for="t in d.preview_text" >
+                            <template v-if="t.old_cit">
+                                [[ t.part ]]
+                                <template v-if="t.new_cit.length > 1">
+                                    (
+                                    <template v-for="n in t.new_cit">
+                                        <template v-if="n.links">
+                                            [[ n.author ]] <a href="'#'+n.bibkey" class="tooltip" :data-tooltip-content="'#'+n.ttipid+'_download'">[[ n.year ]]</a><span v-if="n.page">, <a :data-tooltip-content="'#'+n.ttipid+'_open'" href="#" class="tooltip">[[ n.page ]]</a>;</span> <span v-else>;</span>
+
+                                            <span class="tooltiplinks open" :id="n.ttipid+'_open'">
+                                                <p v-for="link in n.links" v-if="link.type == 'open_url'"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /><a :href="link.href+'#dest='+n.in_pdf_page" target="_blank">[[ link.type.split('_')[0] ]]</a> <input type="text" name="" v-model="n.in_pdf_page" placeholder="in pdf page"/> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ link.type.split('_')[0] ]]</option></select></p>
+                                                <p v-for="link in n.links" v-if="link.type == 'direct_url'"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /><a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                            </span>
+                                            <span class="tooltiplinks download" :id="n.ttipid+'_download'">
+                                                <template v-if="n.page">
+                                                    <p v-for="link in n.links" v-if="link.type != 'open_url' && link.type != 'direct_url'" > <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /> <a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                                </template>
+                                                <template v-else>
+                                                    <p v-for="link in n.links"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /> <a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                                </template>
+
+                                            </span>
+                                        </template>
+                                        <template v-else>
+                                            [[ n.author ]], [[ n.year ]];
+                                        </template>
+                                    </template>
+                                    )
+                                </template>
+                                <template v-else>
+                                    <template v-for="n in t.new_cit">
+                                        <template v-if="n.links">
+                                            ([[ n.author ]] <a href="'#'+n.bibkey" class="tooltip" :data-tooltip-content="'#'+n.ttipid+'_download'">[[ n.year ]]</a><span v-if="n.page">, <a :data-tooltip-content="'#'+n.ttipid+'_open'" href="#" class="tooltip">[[ n.page ]]</a>)</span><span v-else>)</span>
+
+                                            <span class="tooltiplinks open" :id="n.ttipid+'_open'">
+                                                <p v-for="link in n.links" v-if="link.type == 'open_url'"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /><a :href="link.href+'#dest='+n.in_pdf_page" target="_blank">[[ link.type.split('_')[0] ]]</a> <input type="text" name="" v-model="n.in_pdf_page" placeholder="in pdf page"/> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ link.type.split('_')[0] ]]</option></select></p>
+                                                <p v-for="link in n.links" v-if="link.type == 'direct_url'"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /><a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                            </span>
+                                            <span class="tooltiplinks download" :id="n.ttipid+'_download'">
+                                                <template v-if="n.page">
+                                                    <p v-for="link in n.links" v-if="link.type != 'open_url' && link.type != 'direct_url'" > <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /> <a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+                                                </template>
+                                                <template v-else>
+                                                    <p v-for="link in n.links"> <input type="checkbox" name="" value="" checked="True" v-model="link.selected" /> <a :href="link.href" target="_blank">[[ link.type.split('_')[0] ]]</a> <select v-model="link.type"><option v-for="type in urlTypes" :value="type">[[ type ]]</option></select></p>
+
+                                                </template>
+
+                                            </span>
+                                        </template>
+                                        <template v-else>
+                                            ([[ n.author ]] [[ n.year ]])
+                                        </template>
+                                    </template>
+                                </template>
+                            </template>
+                            <template v-else>
+                                [[ t.new_cit ]]
+                            </template>
+                        </template>
+                        <!-- end v-for="t in d.preview_text" -->
+                    </template>
+                    <!-- end v-else (chicago) -->
+
+                    <div id="donediv" class="">
+                        <p>Output format:
+                            <select v-model="selectedFormat">
+                                <option v-for="format in possibleFormats" :value="format">
+                                [[ format ]]
+                                </option>
+                            </select>
+                        </p>
+                        <br>
+                        <button type="submit" name="button" id="done">Done</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+
+    {% endblock %}
+
+    {% block footer %}
+        <div class="tooltip_templates">
+
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="{{ url_for('static', filename='js/just-vue-things.js') }}"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                //console.log("ready");
+                $(".tooltiplinks").each(function () {
+                    $(".tooltip_templates").append(this);
+                });
+
+                $('.tooltip').tooltipster({
+                    theme: 'tooltipster-noir',
+                    interactive: 'true',
+                    delay: [300, 2000]
+                });
+
+                $('.tooltip').tooltipster('open');
+                //console.log(combined);
+
+                //markjs
+
+                var markOptionsQuote = {
+                    "separateWordSearch": false
+                };
+
+                //console.log(combined.all_quotes_to_hl);
+                for (var i = 0; i < combined.all_quotes_to_hl.length; i++) {
+                    //console.log(data.matches[i]);
+                    var oneMatch = combined.all_quotes_to_hl[i];
+                    //console.log(oneMatch);
+                    $(".textdisplay").mark(oneMatch, markOptionsQuote);
+                }
+            });
+
+
+
+
+            $("#done").click(function(){
+                console.log("unmarking quotes, removing button");
+                $(".textdisplay").unmark();
+                $("#donediv").remove();
+                console.log("sending data");
+                //console.log(app.d);
+                var postURL = "{{ url_for('generate')}}";
+                //console.log(postURL);
+
+
+                $.ajaxSetup({async: false}); //set ajax async to false
+                $.ajax({
+                   type: "POST",
+                   contentType: "application/json",
+                   url: postURL,
+                   data: JSON.stringify({'data': app.d, 'format': app.selectedFormat, 'textHTML': $("#vueapp")[0].innerHTML, 'tooltips': $(".tooltip_templates")[0].outerHTML}),
+                   dataType: "json",
+                   success: function(response) {
+                            console.log(response['redirect_url']);
+                            window.location.href = response['redirect_url'];
+                        },
+                   error: function(error) {
+                            console.log(error);
+                    }
+                });
+
+            });
+        </script>
+
+    {% endblock %}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/tooltipster.bundle.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-noir.min.css">
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/js/tooltipster.bundle.min.js"></script>
+        <style media="screen">
+            .tooltip_templates {
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="meheh">
+            {% for t in data %}
+                {%- if t.old_cit -%}
+                    {{ t.part }} <span class="open">(</span>
+                    {%- for n in t.new_cit -%}
+                        {%- set ns = namespace(selection = false) -%}
+                        {%- for link in n.links -%}
+                            {%- if link.selected -%}
+                                {% set ns.selection = true %}
+                            {%- endif -%}
+                        {%- endfor -%}
+                        {%- if n.links -%}
+                            {{- n.author }} {% if ns.selection %}<a href="#{{ n.bibkey }}" class="tooltip" data-tooltip-content="#{{ n.ttipid }}_download">{{ n.year -}}</a>{% else %}{{ n.year -}}{% endif %}
+                            {%- if n.page -%}, {% if ns.selection %}<a data-tooltip-content="#{{ n.ttipid }}_open" href="#" class="tooltip">{{- n.page -}}</a>{% else %}{{- n.page -}}{% endif %}{%- endif -%}{% if not loop.last %}; {%- endif -%}
+                        {% else %}
+                            {{ n.author }} {{ n.year }}{% if not loop.last %}; {% endif %}
+                        {%- endif -%}
+                    {%- endfor -%}
+                    <span class="close">)</span>
+                {%- else -%}
+                    {{ t.new_cit }}
+                {%- endif -%}
+            {% endfor %}
+
+        </div>
+        <div class="references">
+            <h2>References</h2>
+            {{ references }}
+
+        </div>
+
+        <footer>
+            <div class="tooltip_templates">
+                {% for t in data %}
+                    {% if t.old_cit %}
+                        {% for n in t.new_cit %}
+                            {% if n.links %}
+                                <div class="tooltiplinks open" id="{{ n.ttipid }}_open">
+                                    {% for link in n.links  %}
+                                        {% if link.type == 'open_url' %}
+                                            <p><a href="{{ link.href }}#dest={{ n.in_pdf_page }}" target="_blank">{{ link.type }}</a></p>
+                                        {% elif link.type == 'direct_url' %}
+                                            <p><a href="{{ link.href }}" target="_blank">{{ link.type }}</a></p>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="tooltiplinks download" id="{{ n.ttipid }}_download">
+                                    {% for link in n.links %}
+                                        {% if link.type != 'open_url' and link.type != 'direct_url ' %}
+                                            <p><a href="{{ link.href }}" target="_blank">{{ link.type }}</a></p>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+
+
+            </div>
+
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // console.log("ready");
+                    // $(".tooltiplinks").each(function () {
+                    //     //console.log("maybe not?");
+                    //     $(".tooltip_templates").append(this);
+                    // });
+
+                    $('.tooltip').tooltipster({
+                        theme: 'tooltipster-noir',
+                        interactive: 'true'
+                    });
+
+                });
+
+            </script>
+
+
+        </footer>
+
+    </body>
+</html>

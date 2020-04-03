@@ -1,0 +1,29 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/tooltipster.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/css/themes/tooltipster-noir.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/3.3.0/js/jquery.tooltipster.min.js"></script>
+    <style media="screen">
+        .tooltip_templates {
+            display: none;
+        }
+    </style>
+</head>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        //console.log("ready");
+        $(".tooltiplinks").each(function () {
+            $(".tooltip_templates").append(this);
+        });
+
+        $('.tooltip').tooltipster({
+            theme: 'tooltipster-noir',
+            interactive: 'true',
+            delay: [300, 2000]
+        });
+
+        $('.tooltip').tooltipster('open');
+    });
+
+</script>

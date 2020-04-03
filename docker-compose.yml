@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+
+  flask:
+    build: .
+    container_name: linqr
+    restart: always
+    environment:
+      FLASK_DEBUG: 1
+      FLASK_APP: ./app.py
+    volumes:
+      - ./app:/app
+    ports:
+      - "9900:9900"
+    network_mode: "host"

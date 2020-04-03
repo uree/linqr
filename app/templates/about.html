@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='master.css') }}">
+        <link rel="stylesheet" media="screen" href = "{{ url_for('static', filename='bootstrap-4.3.1-dist/css/bootstrap.min.css') }}">
+        <script src="{{ url_for('static', filename='bootstrap-4.3.1-dist/js/bootstrap.min.js') }}"></script>
+
+        <title>about Linqr</title>
+    </head>
+    <body>
+        <div class="container about">
+            <div class="row">
+                <div class="col-xs-12 col-s-12 col-md-10 col-lg-6 col-xl-6 mx-auto">
+                    <h1>about Linqr about</h1>
+
+                    <p>Linqr is a citation assistant. Citations are a big part of the reproduction of academic lives and liveliehoods. That is reason enough to politicize their use.</p>
+
+                    <p>Linqr helps a user enrich their citations in several ways:
+                        <ul>
+                            <li>by improving the accessibility of sources (inserting links to unpaywalled content),</li>
+                            <li>by increasing the precision of links (option to link to cited text),</li>
+                            <li> by adding two-directionality to them (option to link back from the cited text),</li>
+                            <li>by increasing the linguistic diversity of cited works.</li>
+                        </ul>
+                    </p>
+
+                    <p>The hope invested in this assemblage is that the user friendliness of direct and two way linking would prompt people and machines to use this software and thereby increase the share of links to open access literature.</p>
+
+                    <h2>---| instructions |---</h2>
+
+                    <p>The code basically works by extracting the bibliography and the references from an uploaded text, querying <a href="https://yurisearch.coventry.ac.uk/radovan">a number of sources</a> and inserting newfound links into the uploaded text.</p>
+
+                    <ol>
+                        <li>1. Upload either a text file, a bibliography file or both.</li>
+                        <li>2. If provided Linqr uses info in the bibliography file to look for more links. If not it uses the references it extracts from the text file. The search is generally more accurate but returns less results if you provide ISBNs.</li>
+                        <li>3. The searching takes about 5s per reference. The limit is currently set to 180s.</li>
+                        <li>4. Once the search is complete, you are presented with a number of options. They leave you with differing degrees of wiggle room when it comes to corrections and reuse.</li>
+                        <li>4. 1. Download structured data (bibjson, bibtex), which you can then use in zotero or some other citation manager. Bibjson is better than bibtex because it actually supports multiple urls.</li>
+                        <li>4. 2. Download an updated reference list (newfound links appended) in different formats.</li>
+                        <li>5. If you choose to link to pages or to exact quotes, there are some additional steps. Linqr will generate a preview of the text and you are expected to vet the links, deselect bad/unwanted ones, correct the page numbers if necessary. The <b>preview shown is a preview of the html output and merely approximates the final form</b> of the, say, pdf output, due to the specificities of this format.</li>
+                        <li>5. 1. The tooltips displayed in the html preview do not carry over to non-html outputs. They are removed and replaced by links to the appropriate items in the reference list (where all the links are accessible).</li>
+                        <li>5. 2. All the available tooltips are shown initially. <b> If you hover over them they will disappear after 2s and you can open each one separately.</b></li>
+                        <li>6. Once you click "Done" the code generates the final output, which you are then able to download.</li>
+                    </ol>
+
+                    <h2>---| code |---</h2>
+                    <p>The code is available on <a href="https://github.com/uree/linqr">github</a>, along with more detailed installation instructions.</p>
+                    <p>It's easy to <b>get your own instance up and running</b>  with docker(-compose). You must deploy <a href="https://github.com/uree/radovan">Radovan</a> alongside or use the <a href="https://yurisearch.coventry.ac.uk/radovan/about">(bulk) API</a> of an existing instance to provide the search functionality.
+                    Both are licensed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>, which is a very permissive license, but I do forbid commercial use without explicit consent.</p>
+                    <p>A number of sub modules could be <b>useful in other projects</b>. For example, the functions for the recognition of different citation styles in quotes_regex.py or the recognition and extraction of reference lists in linkbuilder_totext.py</p>
+
+                    <h2 id="#known_issues">---| issues |---</h2>
+                    <p>Linqr is in beta. Issues are to be expected at this point. Report them <a href="https://github.com/uree/linqr/issues">here</a>. Some are <b>conscious omissions due to temporal limitations</b> and are thus worth mentioning in advance:</p>
+                    <ul>
+                        <li>The layout/design/pagination of the uploaded texts is not kept and reproduced in the output.</li>
+                        <li>Very long queries time out.</li>
+                        <li>When open, neighbouring tooltips overlap.</li>
+                    </ul>
+
+                    <h2>---| privacy |---</h2>
+                    <p>The server does not log ips, queries or any other identifiers, but it does log errors ie. where the code breaks if/when it breaks.</p>
+
+                    <h2>---| attribution |---</h2>
+
+                    <p>The code relies on a large amount of amazing work done by many people. Check requirements.txt for an exhaustive list.</p>
+
+                    <p>The project was made possible by Coventry University, in particular the <a href="https://www.coventry.ac.uk/research/areas-of-research/postdigital-cultures/about-us/">Centre for Post-Digital Cultures</a>, where this site is hosted.</p>
+
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+</html>

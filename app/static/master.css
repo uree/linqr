@@ -1,0 +1,286 @@
+@font-face {
+  font-family: TerminalGrot;
+  src: url('fonts/terminal-grotesque_open.otf');
+}
+
+@font-face {
+  font-family: GapSansBold;
+  src: url('fonts/GapSansBold.ttf');
+}
+
+@font-face {
+  font-family: Blu;
+  src: url('fonts/BluuNext-Bold.otf');
+}
+
+h1 {
+    font-family: TerminalGrot !important;
+}
+
+body * {
+    font-family: Courier,sans-serif;
+}
+
+
+div.content {
+    font-family: sans-serif;
+    width: 60%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* header */
+h1 {
+    margin-top: 50px;
+}
+
+.topbar {
+    text-align: center;
+    font-size: 4vw;
+}
+
+
+/* footer */
+#about {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+}
+
+#about a {
+    text-decoration: None;
+    color: inherit;
+}
+
+/* upload form */
+.dropzone {
+    border: 2px dashed #0087F7;
+    border-radius: 5px;
+    background: white;
+    min-height: 150px;
+    padding: 54px 54px;
+    max-width: 600px;
+    box-shadow: 0px 0px 40px 40px #000000;
+    margin: 50px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dropzone .dz-message {
+    text-align: center;
+    margin: 2em 0;
+}
+
+.sub-message {
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+button#submit-uploads, button#done {
+    float: right;
+    border: 2px dashed #0087F7;
+    box-shadow: 0px 0px 40px 40px #000000;
+    height: 40px;
+    width: 100px;
+}
+
+.dz-error-mark, .dz-success-mark {
+    display: none;
+}
+
+
+/*
+button#done {
+    position: fixed;
+    top: 80%;
+    right: 20%;
+} */
+
+#donediv {
+    position: fixed;
+    top: 80%;
+    right: 20%;
+}
+
+img#spiral {
+    width: 525px;
+    display: block;
+    margin: auto;
+}
+
+/* resulting_choices aka searching */
+.hidden-input {
+    display: none;
+    background-color: #0087F7;
+    /* border: 2px dashed white; */
+    padding: 15px;
+    margin-left: 50px;
+    margin-right: 200px;
+    background: repeating-linear-gradient(
+      to right,
+      #0087F7,
+      #0087F7 10px,
+      white 10px,
+      white 20px
+    );
+}
+
+.hidden-input p {
+    margin-top: 0px;
+    background-color: white;
+}
+
+button#twoway-submit:hover {
+    background: white;
+}
+
+button > a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.decision_time button {
+    border: 2px dashed #0087F7;
+    box-shadow: 0px 0px 4px 4px #000000;
+    padding: 2px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+ul.choices {
+    list-style: none;
+    padding: 0px;
+
+}
+
+.decision_time li {
+    padding: 30px 15px 0px 0px;
+    line-height: 2rem;
+}
+
+#bibliography_format {
+    border: 2px dashed #0087F7;
+    box-shadow: 0px 0px 4px 4px #000000;
+    padding: 2px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+span.hl_num {
+    color: #0087F7;
+}
+
+p.report_hits {
+    font-style: italic;
+    padding-bottom: 18px;
+}
+
+body.searching div.container div.topbar h1, body.preview div.container div.topbar h1 {
+    opacity: 4%;
+}
+
+
+
+/* processing */
+.textdisplay {
+    font-family: Courier;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.quote {
+    background: #0087F7;
+    color: white;
+}
+
+.keep {
+    color: green;
+}
+
+.delete {
+    color: red;
+}
+
+.correction {
+    color: orange;
+}
+
+span.open {
+    background-color: blue;
+}
+
+span.download {
+    background-color: green;
+}
+
+span.landing {
+    background-color: orange;
+
+}
+
+span.other {
+    background-color: grey;
+
+}
+
+.tooltip_templates {
+    display: none;
+}
+
+/* template {
+    white-space: pre-wrap;
+} */
+div.instructions {
+    border: 2px dashed
+    #0087F7;
+    box-shadow: 0px 0px 4px 4px
+    #000000;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+body.preview div.container div.content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding-top: 10px;
+}
+
+body.preview div.container div.topbar {
+    position: absolute;
+    z-index: -2;
+}
+
+#donediv select {
+    border: 2px dashed #0087F7;
+    box-shadow: 0px 0px 1px 1px
+    #000000;
+    padding: 2px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+/* about */
+.about h1 {
+    font-family: TerminalGrot;
+    font-size: 4rem;
+    text-align: center;
+    /* opacity: 4%; */
+}
+
+.about {
+    font-family: Courier;
+}
+
+.about h2 {
+    font-size: 1.6rem;
+    text-align: center;
+}

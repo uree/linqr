@@ -1,0 +1,8 @@
+env/
+tests/
+uploads/
+__pycache__/
+app/keys.py
+app/zotero.py
+citeproc-node/
+rsync-exclude.txt
