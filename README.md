@@ -63,3 +63,8 @@ Done.
     <li>Very long queries time out.</li>
     <li>When open, neighbouring tooltips overlap.</li>
 </ul>
+
+
+## License
+
+The code is licensed under GPLv3. Commercial use forbidden without explicit consent.
