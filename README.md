@@ -28,7 +28,7 @@ docker run -d -p 8085:8085 -t myciteproc
 
 ## Installation
 
-To be able to use Linqr with hypothes.is create keys.py inside the app directory and add save two variables in it:
+To be able to use Linqr with [hypothes.is](https://web.hypothes.is/) (for deep and bi-directional linking) create keys.py inside the app directory and add save two variables in it:
 
 ```
 hypo_api_token = 'your api tokern'
