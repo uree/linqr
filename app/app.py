@@ -1196,7 +1196,7 @@ def generate():
 
 
         redirect_url = dl_path.replace('downloads/', 'download-file/')
-        logger.error(f"Redirect URL: {redirect_url}")
+        logger.debug(f"Redirect URL: {redirect_url}")
 
         logger.info("cleanup deselected hypo highlights")
         # cleanup deselected hypo highlights
