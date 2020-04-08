@@ -51,16 +51,18 @@ app.config.from_object(__name__)
 Session(app)
 
 # dropzone
+max_in_mb = 10
 dropzone = Dropzone(app)
 app.config['DROPZONE_ALLOWED_FILE_CUSTOM'] = True
 app.config['DROPZONE_ALLOWED_FILE_TYPE'] = '.txt, .pdf, .odt, .md, .bib, .bibtex, .json'
 app.config['DROPZONE_MAX_FILES'] = 2
+app.config['DROPZONE_MAX_FILE_SIZE'] = max_in_mb
 
 # bypass flask to render jijnja template without request
 f = open('templates/dropzone.html')
 dzone_template_raw = f.read()
 template = jinja2.Template(dzone_template_raw)
-drop_html = template.render(formats=allowed_ext_list)
+drop_html = template.render(formats=allowed_ext_list, max_size=max_in_mb)
 app.config['DROPZONE_DEFAULT_MESSAGE'] = drop_html
 
 # JINJA2 SETTINGS
