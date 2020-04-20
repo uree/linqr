@@ -6,8 +6,8 @@ Linqr is a citation assistant. It helps a user enrich their citations in several
 - by adding two-directionality to them (option to link back from the cited text),
 - by increasing the linguistic diversity of cited works.
 
-[Demo](https://yurisearch.coventry.ac.uk/linqr/) (pending).
-[More info](https://yurisearch.coventry.ac.uk/linqr/about) (pending).
+[Demo](https://yurisearch.coventry.ac.uk/linqr/).
+[More info](https://yurisearch.coventry.ac.uk/linqr/about).
 
 
 ## Dependencies
