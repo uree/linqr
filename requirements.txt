@@ -12,7 +12,7 @@ Flask-Dropzone==1.5.4
 Flask-Session==0.3.1
 future==0.18.2
 gunicorn==20.0.4
-httplib2==0.17.0
+httplib2==0.18.0
 idna==2.8
 IMAPClient==2.1.0
 itsdangerous==1.1.0
