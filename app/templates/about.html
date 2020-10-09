@@ -33,16 +33,23 @@
                     <p>The code basically works by extracting the bibliography and the references from an uploaded text, querying <a href="https://yurisearch.coventry.ac.uk/radovan">a number of sources</a> and inserting newfound links into the uploaded text.</p>
 
                     <ol>
-                        <li>1. Upload either a text file, a bibliography file or both.</li>
-                        <li>2. If provided Linqr uses info in the bibliography file to look for more links. If not it uses the references it extracts from the text file. The search is generally more accurate but returns less results if you provide ISBNs.</li>
-                        <li>3. The searching takes about 5s per reference. The limit is currently set to 180s.</li>
-                        <li>4. Once the search is complete, you are presented with a number of options. They leave you with differing degrees of wiggle room when it comes to corrections and reuse.</li>
-                        <li>4. 1. Download structured data (bibjson, bibtex), which you can then use in zotero or some other citation manager. Bibjson is better than bibtex because it actually supports multiple urls.</li>
-                        <li>4. 2. Download an updated reference list (newfound links appended) in different formats.</li>
-                        <li>5. If you choose to link to pages or to exact quotes, there are some additional steps. Linqr will generate a preview of the text and you are expected to vet the links, deselect bad/unwanted ones, correct the page numbers if necessary. The <b>preview shown is a preview of the html output and merely approximates the final form</b> of the, say, pdf output, due to the specificities of this format.</li>
-                        <li>5. 1. The tooltips displayed in the html preview do not carry over to non-html outputs. They are removed and replaced by links to the appropriate items in the reference list (where all the links are accessible).</li>
-                        <li>5. 2. All the available tooltips are shown initially. <b> If you hover over them they will disappear after 2s and you can open each one separately.</b></li>
-                        <li>6. Once you click "Done" the code generates the final output, which you are then able to download.</li>
+                        <li>Upload either a text file, a bibliography file or both.</li>
+                        <li>If provided Linqr uses info in the bibliography file to look for more links. If not it uses the references it extracts from the text file. The search is generally more accurate but returns less results if you provide ISBNs.</li>
+                        <li>The searching takes about 5s per reference. The limit is currently set to 180s.</li>
+                        <li>Once the search is complete, you are presented with a number of options. They leave you with differing degrees of wiggle room when it comes to corrections and reuse.
+                            <ol>
+                                <li>Download structured data (bibjson, bibtex), which you can then use in zotero or some other citation manager. Bibjson is better than bibtex because it actually supports multiple urls.</li>
+                                <li>Download an updated reference list (newfound links appended) in different formats.</li>
+                            </ol>
+                        </li>
+
+                        <li>If you choose to link to pages or to exact quotes, there are some additional steps. Linqr will generate a preview of the text and you are expected to vet the links, deselect bad/unwanted ones, correct the page numbers if necessary. The <b>preview shown is a preview of the html output and merely approximates the final form</b> of the, say, pdf output, due to the specificities of this format.
+                            <ol>
+                                <li>The tooltips displayed in the html preview do not carry over to non-html outputs. They are removed and replaced by links to the appropriate items in the reference list (where all the links are accessible).</li>
+                                <li>All the available tooltips are shown initially. <b> If you hover over them they will disappear after 2s and you can open each one separately.</b></li>
+                            </ol>
+                        </li>
+                        <li>Once you click "Done" the code generates the final output, which you are then able to download.</li>
                     </ol>
 
                     <h2>---| code |---</h2>

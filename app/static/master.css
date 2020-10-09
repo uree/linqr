@@ -283,4 +283,24 @@ body.preview div.container div.topbar {
 .about h2 {
     font-size: 1.6rem;
     text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+ol {
+    counter-reset: item;
+}
+
+li {
+    display: block;
+    padding: 3px;
+}
+
+ol > li:before {
+    content: counters(item, ".") " ";
+    counter-increment: item;
+}
+
+ul > li:before {
+    content: "- ";
 }
