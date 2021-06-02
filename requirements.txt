@@ -37,7 +37,7 @@ sortedcontainers==2.1.0
 soupsieve==1.9.5
 textract==1.6.3
 tzlocal==1.5.1
-urllib3==1.25.7
+urllib3==1.26.5
 Werkzeug==0.16.0
 xlrd==1.2.0
 XlsxWriter==1.2.6
